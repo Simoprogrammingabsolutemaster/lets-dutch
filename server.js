@@ -1,0 +1,66 @@
+const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
+let games = {};
+
+async function rand_deck() {
+  try {
+    let deck = await fetch("deck.json");
+    let carte = await deck.json();
+
+    // algoritmo gemini per mescolare
+
+    for (let i = carte.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [carte[i], carte[j]] = [carte[j], carte[i]];
+    }
+
+    // console.log(carte);
+    return carte;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+app.get("/", (req, res) => {
+  res.send("Server running!");
+});
+
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+
+  socket.on("join-room", (room) => {
+    socket.join(room);
+  });
+
+  socket.on("start-game", async (room) => {
+    //socket.lock(room);
+    let deck = await rand_deck();
+
+    console.log(io.sockets.adapter.rooms.get(room).size);
+    let game = {
+      deck: deck,
+    };
+
+    games[room] = game;
+  });
+});
+
+const PORT = 3000;
+
+httpServer.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
+});

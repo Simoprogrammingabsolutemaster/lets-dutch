@@ -1,0 +1,16 @@
+{
+  "name": "lets-dutch",
+  "version": "1.0.0",
+  "description": "A online dutch ",
+  "license": "ISC",
+  "author": "Big Simon and lil Marco",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}

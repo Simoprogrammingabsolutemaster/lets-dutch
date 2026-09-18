@@ -1,0 +1,69 @@
+[
+  { "id": "jolly_1", "name": "Joker", "seed": "special", "value": -3 },
+  { "id": "jolly_2", "name": "Joker", "seed": "special", "value": -3 },
+
+  { "id": "A_H", "name": "Asso di Cuori", "seed": "hearts", "value": -1 },
+  { "id": "A_D", "name": "Asso di Quadri", "seed": "diamonds", "value": -1 },
+  { "id": "A_S", "name": "Asso di Picche", "seed": "spades", "value": -1 },
+  { "id": "A_C", "name": "Asso di Fiori", "seed": "clubs", "value": -1 },
+
+  { "id": "2_H", "name": "2 di Cuori", "seed": "hearts", "value": 2 },
+  { "id": "2_D", "name": "2 di Quadri", "seed": "diamonds", "value": 2 },
+  { "id": "2_S", "name": "2 di Picche", "seed": "spades", "value": 2 },
+  { "id": "2_C", "name": "2 di Fiori", "seed": "clubs", "value": 2 },
+
+  { "id": "3_H", "name": "3 di Cuori", "seed": "hearts", "value": 3 },
+  { "id": "3_D", "name": "3 di Quadri", "seed": "diamonds", "value": 3 },
+  { "id": "3_S", "name": "3 di Picche", "seed": "spades", "value": 3 },
+  { "id": "3_C", "name": "3 di Fiori", "seed": "spades", "value": 3 },
+
+  { "id": "4_H", "name": "4 di Cuori", "seed": "hearts", "value": 4 },
+  { "id": "4_D", "name": "4 di Quadri", "seed": "diamonds", "value": 4 },
+  { "id": "4_S", "name": "4 di Picche", "seed": "spades", "value": 4 },
+  { "id": "4_C", "name": "4 di Fiori", "seed": "clubs", "value": 4 },
+
+  { "id": "5_H", "name": "5 di Cuori", "seed": "hearts", "value": 5 },
+  { "id": "5_D", "name": "5 di Quadri", "seed": "diamonds", "value": 5 },
+  { "id": "5_S", "name": "5 di Picche", "seed": "spades", "value": 5 },
+  { "id": "5_C", "name": "5 di Fiori", "seed": "clubs", "value": 5 },
+
+  { "id": "6_H", "name": "6 di Cuori", "seed": "hearts", "value": 6 },
+  { "id": "6_D", "name": "6 di Quadri", "seed": "diamonds", "value": 6 },
+  { "id": "6_S", "name": "6 di Picche", "seed": "spades", "value": 6 },
+  { "id": "6_C", "name": "6 di Fiori", "seed": "clubs", "value": 6 },
+
+  { "id": "7_H", "name": "7 di Cuori", "seed": "hearts", "value": 7 },
+  { "id": "7_D", "name": "7 di Quadri", "seed": "diamonds", "value": 7 },
+  { "id": "7_S", "name": "7 di Picche", "seed": "spades", "value": 7 },
+  { "id": "7_C", "name": "7 di Fiori", "seed": "clubs", "value": 7 },
+
+  { "id": "8_H", "name": "8 di Cuori", "seed": "hearts", "value": 8 },
+  { "id": "8_D", "name": "8 di Quadri", "seed": "diamonds", "value": 8 },
+  { "id": "8_S", "name": "8 di Picche", "seed": "spades", "value": 8 },
+  { "id": "8_C", "name": "8 di Fiori", "seed": "clubs", "value": 8 },
+
+  { "id": "9_H", "name": "9 di Cuori", "seed": "hearts", "value": 9 },
+  { "id": "9_D", "name": "9 di Quadri", "seed": "diamonds", "value": 9 },
+  { "id": "9_S", "name": "9 di Picche", "seed": "spades", "value": 9 },
+  { "id": "9_C", "name": "9 di Fiori", "seed": "clubs", "value": 9 },
+
+  { "id": "10_H", "name": "10 di Cuori", "seed": "hearts", "value": 10 },
+  { "id": "10_D", "name": "10 di Quadri", "seed": "diamonds", "value": 10 },
+  { "id": "10_S", "name": "10 di Picche", "seed": "spades", "value": 10 },
+  { "id": "10_C", "name": "10 di Fiori", "seed": "clubs", "value": 10 },
+
+  { "id": "J_H", "name": "Fante di Cuori", "seed": "hearts", "value": 10 },
+  { "id": "J_D", "name": "Fante di Quadri", "seed": "diamonds", "value": 10 },
+  { "id": "J_S", "name": "Fante di Picche", "seed": "spades", "value": 10 },
+  { "id": "J_C", "name": "Fante di Fiori", "seed": "clubs", "value": 10 },
+
+  { "id": "Q_H", "name": "Regina di Cuori", "seed": "hearts", "value": 10 },
+  { "id": "Q_D", "name": "Regina di Quadri", "seed": "diamonds", "value": 10 },
+  { "id": "Q_S", "name": "Regina di Picche", "seed": "spades", "value": 10 },
+  { "id": "Q_C", "name": "Regina di Fiori", "seed": "clubs", "value": 10 },
+
+  { "id": "K_H", "name": "Re di Cuori", "seed": "hearts", "value": 0 },
+  { "id": "K_D", "name": "Re di Quadri", "seed": "diamonds", "value": 0 },
+  { "id": "K_S", "name": "Re di Picche", "seed": "spades", "value": 15 },
+  { "id": "K_C", "name": "Re di Fiori", "seed": "clubs", "value": 15 }
+]
