@@ -1,23 +1,24 @@
-const express = require("express");
-const { createServer } = require("http");
-const { Server } = require("socket.io");
+import { readFile } from "fs/promises";
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 let games = {};
 
 async function rand_deck() {
   try {
-    let deck = await fetch("deck.json");
-    let carte = await deck.json();
+    const data = await readFile("./deck.json", "utf8");
+    const cards = JSON.parse(data);
 
     // algoritmo gemini per mescolare
 
-    for (let i = carte.length - 1; i > 0; i--) {
+    for (let i = cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [carte[i], carte[j]] = [carte[j], carte[i]];
+      [cards[i], cards[j]] = [cards[j], cards[i]];
     }
 
-    // console.log(carte);
-    return carte;
+    // console.log(cards);
+    return cards;
   } catch (error) {
     console.error(error);
   }
