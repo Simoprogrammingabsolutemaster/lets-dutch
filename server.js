@@ -44,11 +44,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-room", (room) => {
+    if (room in games) {
+      return;
+    }
+
     socket.join(room);
+    const clients = io.sockets.adapter.rooms.get(room);
+    io.to(room).emit("player-list", [...clients]);
   });
 
   socket.on("start-game", async (room) => {
-    //socket.lock(room);
     let deck = await rand_deck();
 
     console.log(io.sockets.adapter.rooms.get(room).size);
