@@ -43,24 +43,52 @@ io.on("connection", (socket) => {
     console.log("User disconnected:", socket.id);
   });
 
+  let clients;
+
   socket.on("join-room", (room) => {
     if (room in games) {
       return;
     }
 
     socket.join(room);
-    const clients = io.sockets.adapter.rooms.get(room);
+    clients = io.sockets.adapter.rooms.get(room);
     io.to(room).emit("player-list", [...clients]);
   });
+  socket.on("disconnecting", () => {
+    for (const room of socket.rooms) {
+      if (room !== socket.id) {
+        socket.leave(room);
+        clients = io.sockets.adapter.rooms.get(room);
+        io.to(room).emit("player-list", [...clients]);
+        console.log(clients);
+      }
+    }
+  });
 
-  socket.on("start-game", async (room) => {
+  socket.on("start-game", async () => {
+    let room;
+
+    for (const room of socket.rooms) {
+      if (room != socket.id) {
+        room = room;
+      }
+    }
+
+    //socket.to(room).emit("room", room);
+
+    if (clients[0] != socket.id) {
+      return;
+    }
+
     let deck = await rand_deck();
 
-    console.log(io.sockets.adapter.rooms.get(room).size);
+    //let player_count = io.sockets.adapter.rooms.get(room).size;
+    let payer_count = clients.size();
+
     let game = {
       deck: deck,
+      player_count: count,
     };
-
     games[room] = game;
   });
 });
