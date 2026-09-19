@@ -1,3 +1,4 @@
+import { instrument } from "@socket.io/admin-ui";
 import { readFile } from "fs/promises";
 import express from "express";
 import { createServer } from "http";
@@ -28,7 +29,8 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: ["http://localhost:8080", "https://admin.socket.io"],
+    credentials: true,
   },
 });
 
@@ -48,6 +50,12 @@ io.on("connection", (socket) => {
   socket.on("join-room", (room) => {
     if (room in games) {
       return;
+    }
+
+    for (const room_check of socket.rooms) {
+      if (room_check != socket.id) {
+        socket.leave(room_check);
+      }
     }
 
     socket.join(room);
@@ -98,3 +106,5 @@ const PORT = 3000;
 httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
+
+instrument(io, { auth: false });
