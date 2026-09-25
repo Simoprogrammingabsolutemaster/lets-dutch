@@ -125,6 +125,10 @@ io.on("connection", (socket) => {
       }
     }
 
+    if (!games[room].players) {
+      return;
+    }
+
     if (socket.id != games[room].players[0]) {
       return;
     }
