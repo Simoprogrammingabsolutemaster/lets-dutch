@@ -29,7 +29,11 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:8080", "https://admin.socket.io"],
+    origin: [
+      "http://localhost:8080",
+      "https://admin.socket.io",
+      "http://localhost:5173",
+    ],
     credentials: true,
   },
 });
@@ -62,42 +66,78 @@ io.on("connection", (socket) => {
     clients = io.sockets.adapter.rooms.get(room);
     io.to(room).emit("player-list", [...clients]);
   });
+
   socket.on("disconnecting", () => {
     for (const room of socket.rooms) {
       if (room !== socket.id) {
         socket.leave(room);
         clients = io.sockets.adapter.rooms.get(room);
+
+        if (!clients) {
+          return;
+        }
+
         io.to(room).emit("player-list", [...clients]);
-        console.log(clients);
+        //console.log(clients);
       }
     }
   });
 
   socket.on("start-game", async () => {
     let room;
+    clients = [...clients];
 
-    for (const room of socket.rooms) {
-      if (room != socket.id) {
-        room = room;
+    for (const tempRoom of socket.rooms) {
+      if (tempRoom != socket.id) {
+        room = tempRoom;
       }
     }
 
     //socket.to(room).emit("room", room);
 
     if (clients[0] != socket.id) {
+      console.log(clients[0]);
       return;
     }
 
     let deck = await rand_deck();
 
     //let player_count = io.sockets.adapter.rooms.get(room).size;
-    let payer_count = clients.size();
 
     let game = {
       deck: deck,
-      player_count: count,
+      players: clients,
+      hands: {},
     };
+
     games[room] = game;
+
+    io.to(room).emit("redirect-to-game");
+  });
+
+  socket.on("redirection-to-game-successful", () => {
+    console.log("sbu");
+    let room;
+
+    for (const tempRoom of socket.rooms) {
+      if (tempRoom != socket.id) {
+        room = tempRoom;
+      }
+    }
+
+    if (socket.id != games[room].players[0]) {
+      return;
+    }
+
+    for (let i = 0; i < games[room].players.length; i++) {
+      let id = games[room].players[i];
+
+      games[room].hands[id] = games[room].deck.slice(0, 4);
+      io.to(id).emit("show-starting-hand", games[room].deck.slice(0, 2));
+      games[room].deck.splice(0, 4);
+    }
+
+    //console.dir(games, { depth: 2 });
   });
 });
 
