@@ -1,29 +1,10 @@
 import { instrument } from "@socket.io/admin-ui";
-import { readFile } from "fs/promises";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { rand_deck } from "./utils.js";
 
 let games = {};
-
-async function rand_deck() {
-  try {
-    const data = await readFile("./deck.json", "utf8");
-    const cards = JSON.parse(data);
-
-    // algoritmo gemini per mescolare
-
-    for (let i = cards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [cards[i], cards[j]] = [cards[j], cards[i]];
-    }
-
-    // console.log(cards);
-    return cards;
-  } catch (error) {
-    console.error(error);
-  }
-}
 
 const app = express();
 const httpServer = createServer(app);
@@ -43,13 +24,25 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  let clients;
+
+  function getRoom() {
+    let room;
+
+    for (const tempRoom of socket.rooms) {
+      if (tempRoom != socket.id) {
+        room = tempRoom;
+      }
+    }
+
+    return room;
+  }
+
   console.log("User connected:", socket.id);
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
-
-  let clients;
 
   socket.on("join-room", (room) => {
     if (room in games) {
@@ -84,14 +77,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start-game", async () => {
-    let room;
+    let room = getRoom();
     clients = [...clients];
-
-    for (const tempRoom of socket.rooms) {
-      if (tempRoom != socket.id) {
-        room = tempRoom;
-      }
-    }
 
     //socket.to(room).emit("room", room);
 
@@ -108,6 +95,7 @@ io.on("connection", (socket) => {
       deck: deck,
       players: clients,
       hands: {},
+      activePlayer: Math.floor(Math.random() * clients.length),
     };
 
     games[room] = game;
@@ -116,16 +104,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("redirection-to-game-successful", () => {
-    console.log("sbu");
-    let room;
+    let room = getRoom();
 
-    for (const tempRoom of socket.rooms) {
-      if (tempRoom != socket.id) {
-        room = tempRoom;
-      }
-    }
-
-    if (!games[room].players) {
+    if (!games[room]?.players) {
       return;
     }
 
@@ -140,10 +121,70 @@ io.on("connection", (socket) => {
       io.to(id).emit("show-starting-hand", games[room].deck.slice(0, 2));
       games[room].deck.splice(0, 4);
     }
-
     //console.dir(games, { depth: 2 });
   });
+
+  socket.on("burn", (swap) => {
+    if ((games[room].deck[0] = games[room].hands[id][swap])) {
+    }
+  });
+
+  socket.on("next-turn", () => {
+    let room = getRoom();
+
+    if (socket.id != games[room].players[games[room].activePlayer]) {
+      return;
+    }
+
+    if (games[room].activePlayer >= games[room].players.length) {
+      games[room].activePlayer = 0;
+    } else {
+      games[room].activePlayer++;
+    }
+
+    let discarded_card = games[room].deck[0];
+    io.to(room).emit("discarded-card", discarded_card);
+    io.to(room).emit("active-player", games[room].activePlayer);
+  });
+  /*
+  socket.on("turn-choice", (choice, swap) => {
+    let room = getRoom();
+
+    if (socket.id != games[room].activePlayer) {
+      return;
+    }
+  
+    });
+*/
 });
+
+function game(room, socket) {
+  socket.on;
+  const count = games[room].players.length;
+
+  //aggiungi cosa per far sì che solo il player giusto possa mandare richieste
+  let discarded_card = games[room].deck[0];
+  let draw_card = games[room].deck[1];
+
+  io.to(room).emit("discarded-card", discarded_card);
+  io.to(room).emit("active-player", games[room].players[i]);
+
+  socket.on("turn-choice", (choice, swap) => {
+    console.log(choice, swap);
+    if (choice == 0) {
+      socket.to(games[room].players[i]).emit("draw-card", draw_card);
+      //cioè se decide di pescare e scartare
+      games[room].deck.shift();
+    } else if (choice == 1) {
+      //pesca e swappa
+      games[room].deck[1] = games[room].hands[games[room].players[i]][swap];
+      games[room].hands[games[room].players[i]][swap] = draw_card;
+      games[room].deck.shift();
+    } else if (choice == 2) {
+      //carta sartata swappi
+    }
+  });
+}
 
 const PORT = 3000;
 
@@ -151,4 +192,7 @@ httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
 
-instrument(io, { auth: false });
+instrument(io, {
+  mode: "development",
+  auth: false,
+});
