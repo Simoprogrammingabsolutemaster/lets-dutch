@@ -121,6 +121,7 @@ io.on("connection", (socket) => {
       games[room].hands[id] = games[room].deck.slice(0, 4);
       io.to(id).emit("show-starting-hand", games[room].deck.slice(0, 2));
       games[room].deck.splice(0, 4);
+      //console.log(games[room].hands[id]);
     }
     //console.dir(games, { depth: 2 });
   });
@@ -128,8 +129,12 @@ io.on("connection", (socket) => {
   socket.on("burn", (swap) => {
     let successfull;
     let room = getRoom();
-    if (games[room].deck[0] == games[room].hands[socket.id][swap]) {
-      //DEVI CONFRONTARE NUMERO NON ID
+    if (
+      games[room].deck[0].id.slice(0, -2) ==
+      games[room].hands[socket.id][swap].id.slice(0, -2)
+    ) {
+      //fixare burn bottone 1
+
       games[room].hands[socket.id].splice(swap, 1);
       successfull = true;
       io.to(room).emit("burn-result", socket.id, successfull);
