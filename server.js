@@ -126,12 +126,21 @@ io.on("connection", (socket) => {
   });
 
   socket.on("burn", (swap) => {
-    if ((games[room].deck[0] = games[room].hands[id][swap])) {
-      games[room].hands[id].remove(swap, 1);
+    let successfull;
+    let room = getRoom();
+    if (games[room].deck[0] == games[room].hands[socket.id][swap]) {
+      //DEVI CONFRONTARE NUMERO NON ID
+      games[room].hands[socket.id].splice(swap, 1);
+      successfull = true;
+      io.to(room).emit("burn-result", socket.id, successfull);
+      console.log("true");
     } else {
       let card = games[room].deck[1];
       games[room].deck.slice(0, 1);
-      games[room].hands[id].append(card);
+      games[room].hands[socket.id].push(card);
+      successfull = false;
+      io.to(room).emit("burn-result", socket.id, successfull);
+      console.log("false");
     }
   });
 
@@ -175,7 +184,13 @@ io.on("connection", (socket) => {
   });
   socket.on("choice", (choice, swap) => {
     let room = getRoom();
+
+    console.log(
+      games[room].hands[games[room].players[games[room].activePlayer]],
+    );
+
     console.log(choice, swap);
+    let draw_card = games[room].deck[1];
 
     if (socket.id != games[room].players[games[room]?.activePlayer]) {
       return;
@@ -191,6 +206,9 @@ io.on("connection", (socket) => {
       games[room].hands[games[room].players[games[room].activePlayer]][swap] =
         draw_card;
       games[room].deck.shift();
+      console.log(
+        games[room].hands[games[room].players[games[room].activePlayer]],
+      );
     } else if (choice == 2) {
       //carta sartata swappi
     }
