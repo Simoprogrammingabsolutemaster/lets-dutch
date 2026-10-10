@@ -96,6 +96,7 @@ io.on("connection", (socket) => {
       players: clients,
       hands: {},
       activePlayer: Math.floor(Math.random() * clients.length),
+      lastDrawn: "",
     };
 
     games[room] = game;
@@ -126,6 +127,11 @@ io.on("connection", (socket) => {
 
   socket.on("burn", (swap) => {
     if ((games[room].deck[0] = games[room].hands[id][swap])) {
+      games[room].hands[id].remove(swap, 1);
+    } else {
+      let card = games[room].deck[1];
+      games[room].deck.slice(0, 1);
+      games[room].hands[id].append(card);
     }
   });
 
@@ -136,26 +142,59 @@ io.on("connection", (socket) => {
       return;
     }
 
-    if (games[room].activePlayer >= games[room].players.length) {
-      games[room].activePlayer = 0;
-    } else {
-      games[room].activePlayer++;
-    }
+    games[room].activePlayer =
+      (games[room].activePlayer + 1) % games[room].players.length;
 
     let discarded_card = games[room].deck[0];
     io.to(room).emit("discarded-card", discarded_card);
-    io.to(room).emit("active-player", games[room].activePlayer);
+    console.log(discarded_card);
+    io.to(room).emit(
+      "active-player",
+      games[room].players[games[room].activePlayer],
+    );
+    //console.log(games[room].players[games[room].activePlayer]);
   });
-  /*
-  socket.on("turn-choice", (choice, swap) => {
+
+  socket.on("draw-card", () => {
     let room = getRoom();
 
-    if (socket.id != games[room].activePlayer) {
+    if (socket.id != games[room].players[games[room].activePlayer]) {
       return;
     }
-  
-    });
-*/
+
+    if (socket.id == games[room]?.lastDrawn) {
+      return;
+    }
+
+    let draw_card = games[room].deck[1];
+    io.to(games[room].players[games[room].activePlayer]).emit(
+      "drawn-card",
+      draw_card,
+    );
+    games[room].lastDrawn = socket.id;
+  });
+  socket.on("choice", (choice, swap) => {
+    let room = getRoom();
+    console.log(choice, swap);
+
+    if (socket.id != games[room].players[games[room]?.activePlayer]) {
+      return;
+    }
+
+    if (choice == 0) {
+      //cioè se decide di pescare e scartare
+      games[room].deck.shift();
+    } else if (choice == 1) {
+      //pesca e swappa
+      games[room].deck[1] =
+        games[room].hands[games[room].players[games[room].activePlayer]][swap];
+      games[room].hands[games[room].players[games[room].activePlayer]][swap] =
+        draw_card;
+      games[room].deck.shift();
+    } else if (choice == 2) {
+      //carta sartata swappi
+    }
+  });
 });
 
 function game(room, socket) {
@@ -169,10 +208,10 @@ function game(room, socket) {
   io.to(room).emit("discarded-card", discarded_card);
   io.to(room).emit("active-player", games[room].players[i]);
 
-  socket.on("turn-choice", (choice, swap) => {
+  /*socket.on("turn-choice", (choice, swap) => {
     console.log(choice, swap);
     if (choice == 0) {
-      socket.to(games[room].players[i]).emit("draw-card", draw_card);
+      socket.to(games[room].players[]).emit("draw-card", draw_card);
       //cioè se decide di pescare e scartare
       games[room].deck.shift();
     } else if (choice == 1) {
@@ -183,7 +222,7 @@ function game(room, socket) {
     } else if (choice == 2) {
       //carta sartata swappi
     }
-  });
+  });*/
 }
 
 const PORT = 3000;
